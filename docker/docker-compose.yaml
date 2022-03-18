@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: attendant-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: cspar123
+      MYSQL_DATABASE: attendantDB
+    ports:
+      - "3306:3306"
+    cap_add:
+      - SYS_NICE
