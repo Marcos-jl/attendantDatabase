@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xml:lang="en"
+        xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <script type="text/javascript">
+        //<![CDATA[
+        function start() {
+            PF('statusDialog').show();
+        }
+
+        function stop() {
+            PF('statusDialog').hide();
+        }
+
+        //]]>
+    </script>
+    <title>Registro de Atendentes</title>
+</h:head>
+<f:view>
+    <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false"
+              resizable="false">
+        <p:graphicImage name="/images/ajaxloadingbar.gif"/>
+    </p:dialog>
+    <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>
+    <h:body>
+        <h:form id="formAtendentes" prependId="false">
+            <h:commandLink action="#{atendenteMB.listarTodos}" value="Atualizar registros" >
+                <p:graphicImage name="/images/refresh.png" alt="Atualizando registros" width="24"/>
+            </h:commandLink>
+            <p:growl id="mensagens" showDetail="true" autoUpdate="true" closable="true">
+                <p:autoUpdate/>
+            </p:growl>
+            <p:dataTable id="tabelaAtendente" var="item" value="#{atendenteMB.atendentes}" prependId="false"
+                         paginator="true" rows="25" emptyMessage="Não existe atendentes cadastrados."
+                         rowKey="#{item.id}" selectionMode="single"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}
+                         {RowsPerPageDropdown} {Exporters}"
+                         selection="#{atendenteMB.atendente}"
+                         rowsPerPageTemplate="10,15,25,50,100">
+                <f:facet name="{Exporters}">
+                    <h:commandLink id="exportExcel">
+                        <p:graphicImage name="/images/excel.png" width="24"/>
+                        <p:dataExporter type="xls" target="tabelaAtendente" fileName="RegistroAtendentes"/>
+                    </h:commandLink>
+                    <h:commandLink id="exportPDF">
+                        <p:graphicImage name="/images/pdf.png" width="24"/>
+                        <p:dataExporter type="pdf" target="tabelaAtendente" fileName="RegistroAtendentes"/>
+                    </h:commandLink>
+                    <h:commandLink id="exportCSV">
+                        <p:graphicImage name="/images/csv.png" width="24"/>
+                        <p:dataExporter type="csv" target="tabelaAtendente" fileName="RegistroAtendentes"/>
+                    </h:commandLink>
+                    <h:commandLink id="exportXML">
+                        <p:graphicImage name="/images/xml.png" width="24"/>
+                        <p:dataExporter type="xml" target="tabelaAtendente" fileName="RegistroAtendentes"/>
+                    </h:commandLink>
+                </f:facet>
+
+                <f:facet name="header"><p:outputLabel value="Registro de Atendentes: #{atendenteMB.tamanhoDaLista}"/> </f:facet>
+                <p:column headerText="Id" style="width: 6%;" sortBy="#{item.id}"
+                          filterMatchMode="contains"
+                          filterBy="#{item.id}">
+                    <h:outputText id="outputId"
+                                  value="#{item.id}"/>
+                </p:column>
+                <p:column headerText="Usuário" style="width: 10%;" sortBy="#{item.user}"
+                          filterMatchMode="contains"
+                          filterBy="#{item.user}">
+                    <h:outputText id="outputUser"
+                                  value="#{item.user}"/>
+                </p:column>
+                <p:column headerText="Nome Completo" style="width: 15%;" sortBy="#{item.name}" filterBy="#{item.name}">
+                    <h:outputText value="#{item.name}"/>
+                </p:column>
+                <p:column headerText="Senha" style="width: 10%;" sortBy="#{item.password}"
+                          filterBy="#{item.password}">
+                    <h:outputText value="#{item.password}"/>
+                </p:column>
+                <p:column headerText="Cpf" style="width: 10%;" sortBy="#{item.cpf}"
+                          filterBy="#{item.cpf}">
+                    <h:outputText value="#{item.cpf}"/>
+                </p:column>
+                <p:column headerText="Email" style="width: 15%;" sortBy="#{item.email}"
+                          filterBy="#{item.email}">
+                    <h:outputText value="#{item.email}"/>
+                </p:column>
+                <p:column style="width:10%;text-align: center" headerText="Ações" exportable="false">
+                    <p:commandButton update=":formAtendentes:atendenteDetail" oncomplete="PF('itemDialog').show()"
+                                     icon="ui-icon-search"
+                                     title="Detalhes">
+                        <f:setPropertyActionListener value="#{item}" target="#{atendenteMB.atendente}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <p:dialog header="Detalhes do Atendente" widgetVar="itemDialog" modal="true" showEffect="fade" hideEffect="fade"
+                      resizable="false">
+                <p:outputPanel id="atendenteDetail" style="text-align:center;">
+                    <p:panelGrid columns="2" rendered="#{not empty atendenteMB.atendente}" columnClasses="label,value">
+                        <f:facet name="header">
+                            <h:outputLabel>Atendente</h:outputLabel>
+                        </f:facet>
+
+                        <h:outputText value="Id"/>
+                        <h:inputText value="#{atendenteMB.atendente.id}" disabled="#{true}"/>
+
+                        <h:outputText value="Usuário"/>
+                        <h:inputText value="#{atendenteMB.atendente.user}" disabled="true"/>
+
+                        <h:outputText value="Nome"/>
+                        <h:inputText value="#{atendenteMB.atendente.name}" disabled="true"/>
+
+                        <h:outputText value="Senha"/>
+                        <h:inputText value="#{atendenteMB.atendente.password}" disabled="true"/>
+
+                        <h:outputText value="Cpf"/>
+                        <h:inputText value="#{atendenteMB.atendente.cpf}" disabled="true"/>
+
+                        <h:outputText value="Email"/>
+                        <h:inputText value="#{atendenteMB.atendente.email}" disabled="true"/>
+                    </p:panelGrid>
+                    <p:panelGrid columns="2" columnClasses="label,value">
+                        <p:button id="btnFechar" value="Fechar" icon="ui-icon-plusthick" />
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+        </h:form>
+    </h:body>
+</f:view>
+</html>
